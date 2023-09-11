@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: simple-api
+spec:
+  serviceName: simple-api-headless
+  replicas: 20
+  selector:
+    matchLabels:
+      app: simple-api
+  template:
+    metadata:
+      labels:
+        app: simple-api
+    spec:
+      containers:
+      - name: simple-api
+        image: mas205/simple-api:v1.0
+        ports:
+        - containerPort: 8080
+          name: http
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
