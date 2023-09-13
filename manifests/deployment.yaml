@@ -4,7 +4,7 @@ metadata:
   name: simple-api
 spec:
   serviceName: simple-api-headless
-  replicas: 20
+  replicas: 40
   selector:
     matchLabels:
       app: simple-api
