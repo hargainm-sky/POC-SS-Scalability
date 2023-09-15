@@ -5,35 +5,25 @@ metadata:
    annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    nginx.ingress.kubernetes.io/server-snippet: |
-        location ~ ^/pod-try/(\d+)(.*) {
-            client_max_body_size                    50;
-            proxy_connect_timeout                   1s;
-            proxy_send_timeout                      1s;
-            proxy_read_timeout                      1s;
-            proxy_buffering                         off;
-            proxy_buffer_size                       4k;
-            proxy_buffers                           4 4k;
-            proxy_request_buffering                 on;
-            proxy_http_version                      1.1;
-            proxy_cookie_domain                     off;
-            proxy_cookie_path                       off;
-            proxy_next_upstream                     error timeout;
-            proxy_next_upstream_timeout             0;
-            proxy_next_upstream_tries               1;
-            set $pod_number $1;
-            set $path $2;
-            proxy_pass http://simple-api-$pod_number.simple-api-headless.default.svc.cluster.local:8080$path;
-            proxy_redirect                          off;
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+        set $pod_number "";
+        if ($host ~* "^pod-(\d+)\.example\.info(.*)") {
+          set $pod_number $1;
+          set $path $2;
+        }
+        if ($pod_number != "") {
+          set $pod_number $1;
+          proxy_pass http://simple-api-$pod_number.simple-api-headless.default.svc.cluster.local:8080$path;
         }
 spec:
   rules:
-  - http:
+  - host: "*.example.info"
+    http:
       paths:
-      - path: /pod-try
+      - path: /
         pathType: Prefix
         backend:
           service:
             name: simple-api-headless
             port:
-              number: 80
+              number: 8080

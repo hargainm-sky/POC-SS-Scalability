@@ -4,7 +4,7 @@ metadata:
   name: simple-api
 spec:
   serviceName: simple-api-headless
-  replicas: 40
+  replicas: 2
   selector:
     matchLabels:
       app: simple-api
@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: simple-api
-        image: mas205/simple-api:v1.0
+        image: mas205/simple-api:v1.2
         ports:
         - containerPort: 8080
           name: http
